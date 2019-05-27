@@ -14,6 +14,8 @@
 #define TRIG_PIN A0
 #define ECHO_PIN A1
 #define MAX_DISTANCE 400
+
+// Sensor ecoico
 NewPing sonar(TRIG_PIN, ECHO_PIN, MAX_DISTANCE); 
 
 //-------------------------------------------------------------------
@@ -47,12 +49,12 @@ int Time=200;
 #define ADP_pin 10     // Pin Atras Derecha Pata
 
 //-------------------------------------------------------------------
-
+// Variables de movimiento.
+//-------------------------------------------------------------------
 int movimiento_izq;
 int movimiento_der;
 int levanta=-400;
 
-int contador_sentarse;
 int distancia_actual = 0;
 int pos = 90;
 
@@ -95,16 +97,15 @@ void setup()
   posicion_inicial();
 }
 
-void loop() {
-  movimiento_izq=300;
-  movimiento_der=300;
-  int i;
+void loop() 
+{
   char c;
+  
   while(1) {
     if (Serial.available() > 0) {
-      i = 0;
       while(Serial.available() > 0) {
         c = Serial.read();
+      }
       
       if (c == 'w') {
         movimiento_izq=300;
@@ -134,21 +135,19 @@ void loop() {
       }
       if (c == 'i') {
         posicion_inicial();
-      }
-      }
+      }      
     }
   }
 }
 
 //-------------------------------------------------------------------
-// Leer US y pasarlo a cm
+// Distancia en cm medida por el sensor HC-SR04
 //-------------------------------------------------------------------    
 int readPing()
 {
   unsigned int uS = sonar.ping();
   delay(50);
-  int cm = uS/US_ROUNDTRIP_CM;
-  return cm;
+  return uS / US_ROUNDTRIP_CM;
 }
 
 //-------------------------------------------------------------------
@@ -175,7 +174,7 @@ void posicion_inicial()
 }
 
 //-------------------------------------------------------------------
-//             Funcion Avanzar hacia el frente
+// Avanza la araña
 //-------------------------------------------------------------------
 void camina()
 {
@@ -253,23 +252,7 @@ void sentarse()
     
   delay(2500);                //espera 2,5 Segundos
   
-  FIP_servo.writeMicroseconds(FIP_centro); 
-  delay(tiempo_entre_servo); 
-  FDP_servo.writeMicroseconds(FDP_centro); 
-  delay(tiempo_entre_servo);
-  FIC_servo.writeMicroseconds(FIC_centro);  
-  delay(tiempo_entre_servo);
-  FDC_servo.writeMicroseconds(FDC_centro);  
-  delay(tiempo_entre_servo);
-  AIP_servo.writeMicroseconds(AIP_centro); 
-  delay(tiempo_entre_servo); 
-  ADP_servo.writeMicroseconds(ADP_centro); 
-  delay(tiempo_entre_servo);
-  AIC_servo.writeMicroseconds(AIC_centro);                      // center servos
-  delay(tiempo_entre_servo);
-  ADC_servo.writeMicroseconds(ADC_centro); 
-  
-  delay(500);
+  posicion_inicial();
 }
 
 //-------------------------------------------------------------------
@@ -312,27 +295,24 @@ void mueve_pata_frente(void)
 {
   int maximo=500;
   int tiempo_saluda=80;
-    for(int j=0;j<maximo;j=j+100)
-  {
-  FDC_servo.writeMicroseconds(FDC_centro+j);  //se tira al piso de costado
-  delay(tiempo_saluda);
+  
+  for(int j=0;j<maximo;j=j+100) {
+    FDC_servo.writeMicroseconds(FDC_centro+j);  //se tira al piso de costado
+    delay(tiempo_saluda);
   }
 
-  for(int j=maximo;j>0;j=j-100)
-  {
-  FDC_servo.writeMicroseconds(FDC_centro+j);  //se tira al piso de costado
-  delay(tiempo_saluda);
+  for(int j=maximo;j>0;j=j-100) {
+    FDC_servo.writeMicroseconds(FDC_centro+j);  //se tira al piso de costado
+    delay(tiempo_saluda);
   }
 
-  for(int j=0;j<maximo;j=j+100)
-  {
-  FDC_servo.writeMicroseconds(FDC_centro-j);  //se tira al piso de costado
-  delay(tiempo_saluda);
+  for(int j=0;j<maximo;j=j+100) {
+    FDC_servo.writeMicroseconds(FDC_centro-j);  //se tira al piso de costado
+    delay(tiempo_saluda);
   }
 
-  for(int j=maximo;j>0;j=j-100)
-  {
-  FDC_servo.writeMicroseconds(FDC_centro-j);  //se tira al piso de costado
-  delay(tiempo_saluda);
+  for(int j=maximo;j>0;j=j-100) {
+    FDC_servo.writeMicroseconds(FDC_centro-j);  //se tira al piso de costado
+    delay(tiempo_saluda);
   }
 }
