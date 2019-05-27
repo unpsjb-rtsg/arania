@@ -76,7 +76,8 @@ Servo FDP_servo; // Front Right Knee
 Servo AIP_servo; // Rear  left  Knee
 Servo ADP_servo; // Rear  Right Knee
 
-void setup() {
+void setup()
+{
   Serial.begin(9600);
   
   //-------------------------------------------------------------------
@@ -90,10 +91,71 @@ void setup() {
   FDP_servo.attach(FDP_pin);  
   AIP_servo.attach(AIP_pin);  
   ADP_servo.attach(ADP_pin); 
-  
-  //-------------------------------------------------------------------
-  // Servos en sus posiciones iniciales.
-  //-------------------------------------------------------------------
+
+  posicion_inicial();
+}
+
+void loop() {
+  movimiento_izq=300;
+  movimiento_der=300;
+  int i;
+  char c;
+  while(1) {
+    if (Serial.available() > 0) {
+      i = 0;
+      while(Serial.available() > 0) {
+        c = Serial.read();
+      
+      if (c == 'w') {
+        movimiento_izq=300;
+        movimiento_der=300;
+        camina();
+      }
+      if (c == 's') {
+        movimiento_izq=-300;
+        movimiento_der=-300;
+        camina();
+      }
+      if (c == 'a') {
+        movimiento_izq=-300;
+        movimiento_der=300;
+        camina();
+      }
+      if (c == 'd') {
+        movimiento_izq=300;
+        movimiento_der=-300;
+        camina();
+      }
+      if (c == 'p') {
+        sentarse();
+      }
+      if (c == 'h') {
+        saluda();
+      }
+      if (c == 'i') {
+        posicion_inicial();
+      }
+      }
+    }
+  }
+}
+
+//-------------------------------------------------------------------
+// Leer US y pasarlo a cm
+//-------------------------------------------------------------------    
+int readPing()
+{
+  unsigned int uS = sonar.ping();
+  delay(50);
+  int cm = uS/US_ROUNDTRIP_CM;
+  return cm;
+}
+
+//-------------------------------------------------------------------
+// Pone la araña en posicion inicial.
+//-------------------------------------------------------------------
+void posicion_inicial()
+{
   FIC_servo.writeMicroseconds(FIC_centro);
   delay(tiempo_entre_servo);
   FDC_servo.writeMicroseconds(FDC_centro); 
@@ -110,43 +172,6 @@ void setup() {
   delay(tiempo_entre_servo);
   ADP_servo.writeMicroseconds(ADP_centro); 
   delay(tiempo_entre_servo);
-
-  delay(500);  
-}
-
-void loop() {
-  movimiento_izq=300;
-  movimiento_der=300;
-  int i;
-  char c;
-  while(1) {
-    if (Serial.available() > 0) {
-      i = 0;
-      while(Serial.available() > 0) {
-        c = Serial.read();
-      }
-      if (c == 'a') {
-        camina();
-      }
-      if (c == 'p') {
-        sentarse();
-      }
-      if (c == 's') {
-        saluda();
-      }
-    }
-  }
-}
-
-//-------------------------------------------------------------------
-// Leer US y pasarlo a cm
-//-------------------------------------------------------------------    
-int readPing()
-{
-  unsigned int uS = sonar.ping();
-  delay(50);
-  int cm = uS/US_ROUNDTRIP_CM;
-  return cm;
 }
 
 //-------------------------------------------------------------------
@@ -276,31 +301,8 @@ void saluda(void)
   mueve_pata_frente();
   mueve_pata_frente();
   delay(1000);
-  
-  Cabeza_servo.write(45);
-  delay(300);
-  Cabeza_servo.write(135);
-  delay(300);
-  Cabeza_servo.write(90);
-  delay(2000);  
-  
-  FIP_servo.writeMicroseconds(FIP_centro); 
-  delay(tiempo_entre_servo); 
-  FDP_servo.writeMicroseconds(FDP_centro); 
-  delay(tiempo_entre_servo);
-  FIC_servo.writeMicroseconds(FIC_centro);  
-  delay(tiempo_entre_servo);
-  FDC_servo.writeMicroseconds(FDC_centro);  
-  delay(tiempo_entre_servo);
-  AIP_servo.writeMicroseconds(AIP_centro); 
-  delay(tiempo_entre_servo); 
-  ADP_servo.writeMicroseconds(ADP_centro); 
-  delay(tiempo_entre_servo);
-  AIC_servo.writeMicroseconds(AIC_centro); // center servos
-  delay(tiempo_entre_servo);
-  ADC_servo.writeMicroseconds(ADC_centro); 
-  
-  delay(500);
+
+  posicion_inicial();
 }
 
 //-------------------------------------------------------------------
